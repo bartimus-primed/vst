@@ -1,7 +1,7 @@
-module main
+module cli
 
 import c2
 
-fn main() {
-	println(c2.get_os())
+pub fn start_cli() {
+	c2.start_c2()
 }

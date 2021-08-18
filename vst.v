@@ -1,5 +1,7 @@
 module main
+import cli
+
 
 fn main() {
-	println('Hello World!')
+	cli.start_cli()
 }

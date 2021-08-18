@@ -20,3 +20,7 @@ fn parse_ip_output(result os.Result) ?[]string {
 pub fn get_ip_addresses() ?[]string {
 	return parse_ip_output(os.execute("ipconfig /all"))
 }
+
+pub fn create_listener(ip string, port int) {
+
+}

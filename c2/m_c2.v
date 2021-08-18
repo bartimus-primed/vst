@@ -5,13 +5,15 @@ import windows
 import linux
 import term
 import strconv
+import rand
+import net
 // detect os
 
-struct Windows_C2_Functions {
+struct Windows_C2_Config {
 
 }
 
-struct Linux_C2_Functions {
+struct Linux_C2_Config {
 
 }
 
@@ -40,9 +42,32 @@ fn handle_windows_c2() bool {
 		return false
 	}
 	term.clear()
-	println("Starting listener on ${results[choice]}")
+	println("Selected Interface with IP: ${results[choice]}")
+	port_choice := strconv.atoi(os.input("What port would you like to listen on? [Press enter for random high]")) or {
+		rand.int_in_range(50000,65535)
+	}
+	term.clear()
+	println("Starting listener on ${results[choice]}:$port_choice")
+	create_listener(results[choice], port_choice)
 	return true
 }
+
+pub fn create_listener(ip string, port int) {
+	mut listener := net.listen_udp("$ip:$port") or {
+		println("Failed to open UDP")
+		return 
+	}
+	defer {
+		println("Closing port")
+		listener.close() or { panic("Failed to close port")}
+	}
+	println("Successfully started UDP Listener on $ip:$port")
+	mut a := strconv.atoi(os.input("wait")) or { 777 }
+	for a != 0 {
+		a = strconv.atoi(os.input("wait")) or { 777 }
+	}
+}
+
 
 pub fn start_c2() bool {
 	match get_os() {

@@ -53,21 +53,49 @@ fn handle_windows_c2() bool {
 }
 
 pub fn create_listener(ip string, port int) {
+	
 	mut listener := net.listen_udp("$ip:$port") or {
 		println("Failed to open UDP")
 		return 
 	}
+	println("Successfully started UDP Listener on $ip:$port")
 	defer {
 		println("Closing port")
 		listener.close() or { panic("Failed to close port")}
 	}
-	println("Successfully started UDP Listener on $ip:$port")
-	mut a := strconv.atoi(os.input("wait")) or { 777 }
-	for a != 0 {
-		a = strconv.atoi(os.input("wait")) or { 777 }
+	conn_data := chan []byte{}
+	go handle_listener(mut listener, conn_data)
+	for {
+		if select {
+			a := <-conn_data {
+				println(a)
+			}
+		} {} else {
+			println("channel closed")
+			return
+		}
 	}
 }
 
+fn handle_listener(mut c net.UdpConn, conn_data chan []byte) {
+
+	for {
+		mut buf := []byte{len: 100, init: 0}
+		read, addr := c.read(mut buf) or { continue }
+
+		println('Server got addr $addr')
+
+		c.write_to(addr, buf[..read]) or {
+			println('Server: connection dropped')
+			return
+		}
+		if string(buf) == "Exit\n" {
+			conn_data.close() 
+			return
+		}
+		conn_data <- buf
+	}
+}
 
 pub fn start_c2() bool {
 	match get_os() {

@@ -51,51 +51,54 @@ fn handle_c2(results []string) bool {
 	}
 	term.clear()
 	println("Starting listener on ${results[choice]}:$port_choice")
-	create_listener(results[choice], port_choice)
-	return true
+	return create_listener(results[choice], port_choice)
 }
 
-pub fn create_listener(ip string, port int) {
-	
-	mut listener := net.listen_udp("$ip:$port") or {
-		println("Failed to open UDP")
-		return 
+pub fn create_listener(ip string, port int) bool {	
+	if !g_config.bind_c2("$ip:$port") {
+		return false
 	}
 	println("Successfully started UDP Listener on $ip:$port")
 	defer {
 		println("Closing port")
-		listener.close() or { panic("Failed to close port")}
 	}
-	conn_data := chan []byte{}
-	go handle_listener(mut listener, conn_data)
+	go handle_listener()
 	for {
 		if select {
-			a := <-conn_data {
-				println(a)
+			a := <-g_config.connection_stream {
+				println(string(a))
+				if string(a) == "Exit\n" {
+					return true
+				}
 			}
-		} {} else {
+		} {
+			println("Received")
+		} else {
 			println("channel closed")
-			return
+			return true
 		}
 	}
+	return false
 }
 
-fn handle_listener(mut c net.UdpConn, conn_data chan []byte) {
+pub fn view_listener() {
+	
+}
+
+fn handle_listener() {
 	for {
 		mut buf := []byte{len: 100, init: 0}
-		read, addr := c.read(mut buf) or { continue }
-
-		println('Server got addr $addr')
-
-		c.write_to(addr, buf[..read]) or {
+		mut con := g_config.c2_listen_handle
+		read, addr := con.read(mut buf) or { continue } {
+			println('Server got addr $addr')
+		}
+		con.write_to(addr, buf[..read]) or {
 			println('Server: connection dropped')
-			return
 		}
 		if string(buf) == "Exit\n" {
-			conn_data.close() 
-			return
+			g_config.close_c2()
 		}
-		conn_data <- buf
+		g_config.connection_stream <- buf
 	}
 }
 
@@ -117,10 +120,3 @@ pub fn start_c2() bool {
 pub fn stop_c2() bool {
 	return true
 }
-
-
-// start listener
-
-// interact
-
-// schedule tasks

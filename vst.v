@@ -5,6 +5,17 @@ import os
 import term
 import strconv
 import vicl { Prompt_Manager, Prompt }
+import config { CONFIG }
+
+__global (
+	g_config CONFIG
+)
+
+fn init() {
+	g_config = &CONFIG{
+		connection_stream: chan []byte{}
+	}
+}
 
 fn main() {
 	mut app := cli.Command{
@@ -71,5 +82,5 @@ fn run_repl() {
 	for prompt_mgr.status != "Exit" {
 		prompt_mgr.start_repl()
 	}
+	g_config.close_c2()
 }
-

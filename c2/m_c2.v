@@ -20,7 +20,37 @@ struct Linux_C2_Config {
 pub fn get_os() string {
 	return os.user_os()
 }
-
+fn handle_linux_c2() bool {
+	term.clear()
+	println("running on linux...")
+	println("=====================")
+	results := linux.get_ip_addresses() or {
+		panic(err)
+	}
+	println("Which IP would you like to listen on?")
+	println("0). Back")
+	for idx, ip in results {
+		println("${idx+1}). $ip")
+	}
+	mut choice := strconv.atoi(os.input("Input interface number: ")) or { 777 }
+	if choice == 0 {
+		term.clear()
+		return true
+	}
+	if choice == 777 {
+		return false
+	}
+	choice = choice - 1
+	term.clear()
+	println("Selected Interface with IP: ${results[choice]}")
+	port_choice := strconv.atoi(os.input("What port would you like to listen on? [Press enter for random high]")) or {
+		rand.int_in_range(50000,65535)
+	}
+	term.clear()
+	println("Starting listener on ${results[choice]}:$port_choice")
+	create_listener(results[choice], port_choice)
+	return true
+}
 fn handle_windows_c2() bool {
 	term.clear()
 	println("running on windows...")
@@ -103,8 +133,7 @@ pub fn start_c2() bool {
 			return handle_windows_c2()
 		}
 		"linux" {
-			println("running on linux")
-			return false
+			return handle_linux_c2()
 		}
 		else {
 			println("unsupported os")

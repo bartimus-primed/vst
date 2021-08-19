@@ -1,5 +1,6 @@
 module main
 import c2
+import implant
 import cli
 import os
 import term
@@ -20,7 +21,6 @@ fn init() {
 fn main() {
 	mut app := cli.Command{
 		name: 'V Security Tools'
-		description: 'What have you pwned today?'
 		execute: fn(cmd cli.Command) ? {
 			term.clear()
 			println("Welcome... Starting interactive mode.")
@@ -44,6 +44,7 @@ fn main() {
 }
 
 fn run_repl() {
+
 	c2_start := &Prompt{
 		title: "Start C2"
 		func: c2.start_c2
@@ -52,24 +53,24 @@ fn run_repl() {
 		title: "Stop C2"
 		func: c2.stop_c2
 	}
-	beacon_create := &Prompt{
-		title: "Create Beacon"
-		func: fn() bool {return true}
+	implant_create := &Prompt{
+		title: "Create Implant"
+		func: implant.start_implant
 	}
 	c2_prompt := &Prompt{
 		title: "C2 Server",
 		choices: [vicl.back_, c2_start, c2_stop]
 		sub_prompts: []&Prompt{}
 	}
-	beacon_prompt := &Prompt{
-		title: "Beacons",
-		choices: [vicl.back_, beacon_create],
+	implant_prompt := &Prompt{
+		title: "Implants",
+		choices: [vicl.back_, implant_create],
 		sub_prompts: []&Prompt{}
 	}
 	main_prompt := &Prompt{
 		title: "Main Menu",
-		choices: [vicl.exit_, c2_prompt, beacon_prompt],
-		sub_prompts: [c2_prompt, beacon_prompt]
+		choices: [vicl.exit_, c2_prompt, implant_prompt],
+		sub_prompts: [c2_prompt, implant_prompt]
 	}
 	mut prompt_mgr := Prompt_Manager{
 		status: "Main Menu",
@@ -77,8 +78,17 @@ fn run_repl() {
 		stored_prompts: []&Prompt{},
 		prompts: [main_prompt]
 	}
-
-	println("Lets get you set up...")
+	// Need to work on sigint catching...
+	// os.signal_opt(.int, fn(s os.Signal) {
+	// 		ans := strconv.atoi(os.input("Are you trying to exit or just go back? [enter to exit]")) or { 0 }
+	// 		if ans == 0 {
+	// 			println("cleaning up and exiting...")
+	// 			exit(0)
+	// 		}
+	// 		return
+	// }) or { panic(err) }
+	println(term.ok_message("What have you pwned today?"))
+	println(term.blue("Lets get you set up..."))
 	for prompt_mgr.status != "Exit" {
 		prompt_mgr.start_repl()
 	}

@@ -49,11 +49,11 @@ pub fn (mut p Prompt_Manager) selection(item int) {
 		return
 	}
 	if item == 777 {
-		println("That is not valid")
+		println(term.fail_message("That is not valid"))
 		return
 	}
 	if item > p.current_prompt.choices.len-1 {
-		println("You entered ${item - (p.current_prompt.choices.len-1)} higher than the last choice...")
+		println(term.fail_message("You entered ${item - (p.current_prompt.choices.len-1)} higher than the last choice..."))
 		return
 	}
 	// There were no subprompts so we need to execute commands

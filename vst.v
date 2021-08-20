@@ -7,7 +7,6 @@ import term
 import strconv
 import vicl { Prompt_Manager, Prompt }
 import config { CONFIG }
-
 __global (
 	g_config CONFIG
 )
@@ -87,8 +86,8 @@ fn run_repl() {
 	// 		}
 	// 		return
 	// }) or { panic(err) }
-	println(term.ok_message("What have you pwned today?"))
-	println(term.blue("Lets get you set up..."))
+	vicl.pgood("What have you pwned today?")
+	vicl.pblue("Lets get you set up...")
 	for prompt_mgr.status != "Exit" {
 		prompt_mgr.start_repl()
 	}

@@ -84,3 +84,16 @@ pub fn(mut p Prompt_Manager) start_repl() {
 	choice_num := strconv.atoi(os.input("Enter Choice: ")) or { 777 }
 	p.selection(choice_num)
 }
+
+pub fn perror(mesg string) {
+	println(term.fail_message(mesg))
+}
+pub fn pgood(mesg string) {
+	println(term.ok_message(mesg))
+}
+pub fn pblue(mesg string) {
+	println(term.blue(mesg))
+}
+pub fn pyellow(mesg string) {
+	println(term.yellow(mesg))
+}

@@ -2,7 +2,7 @@ module config
 import json
 import os
 import net
-import term
+import vicl
 
 pub struct CONFIG {
 pub mut:
@@ -15,7 +15,7 @@ pub mut:
 
 pub fn (c &CONFIG) bind_c2(connection_string string) bool {
 	g_config.c2_listen_handle = net.listen_udp(connection_string) or {
-		println(term.fail_message("Failed to open UDP"))
+		vicl.perror("Failed to open UDP")
 		return false
 	}
 	g_config.bind_info = connection_string
@@ -25,7 +25,7 @@ pub fn (c &CONFIG) bind_c2(connection_string string) bool {
 
 pub fn (c &CONFIG) close_c2() bool {
 	g_config.c2_listen_handle.close() or {
-		println(term.yellow("Failed to close C2 or C2 was already closed"))
+		vicl.pyellow("Failed to close C2 or C2 was already closed")
 		return false
 	}
 	return true
@@ -33,7 +33,7 @@ pub fn (c &CONFIG) close_c2() bool {
 
 fn (c &CONFIG) write_implant_config() {
 	os.write_file("./config/implant.config", g_config.bind_info) or {
-		println(term.fail_message("Failed to write implant config for C2 instance"))
+		vicl.perror("Failed to write implant config for C2 instance")
 	}
 	println("Write Implant Config to VSTDIR/config/implant.config")
 }

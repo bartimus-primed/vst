@@ -8,8 +8,8 @@ pub struct C2_CONFIG {
 pub mut:
 	connection_stream chan []byte
 	c2_listen_handle net.UdpConn
-	bind_info string = ""
-	selected_implant_os string = ""
+	bind_info string
+	selected_implant_os string
 	supported_oses []string = ["windows", "linux"]
 }
 

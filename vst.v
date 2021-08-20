@@ -6,13 +6,13 @@ import os
 import term
 import strconv
 import vicl { Prompt_Manager, Prompt }
-import config { CONFIG }
+import config
 __global (
-	g_config CONFIG
+	g_config &config.C2_CONFIG
 )
 
 fn init() {
-	g_config = &CONFIG{
+	g_config = &config.C2_CONFIG{
 		connection_stream: chan []byte{}
 	}
 }

@@ -4,7 +4,7 @@ import os
 import net
 import vicl
 
-pub struct CONFIG {
+pub struct C2_CONFIG {
 pub mut:
 	connection_stream chan []byte
 	c2_listen_handle net.UdpConn
@@ -13,7 +13,7 @@ pub mut:
 	supported_oses []string = ["windows", "linux"]
 }
 
-pub fn (c &CONFIG) bind_c2(connection_string string) bool {
+pub fn (c &C2_CONFIG) bind_c2(connection_string string) bool {
 	g_config.c2_listen_handle = net.listen_udp(connection_string) or {
 		vicl.perror("Failed to open UDP")
 		return false
@@ -23,7 +23,7 @@ pub fn (c &CONFIG) bind_c2(connection_string string) bool {
 	return true
 }
 
-pub fn (c &CONFIG) close_c2() bool {
+pub fn (c &C2_CONFIG) close_c2() bool {
 	g_config.c2_listen_handle.close() or {
 		vicl.pyellow("Failed to close C2 or C2 was already closed")
 		return false
@@ -31,7 +31,7 @@ pub fn (c &CONFIG) close_c2() bool {
 	return true
 }
 
-fn (c &CONFIG) write_implant_config() {
+fn (c &C2_CONFIG) write_implant_config() {
 	os.write_file("./config/implant.config", g_config.bind_info) or {
 		vicl.perror("Failed to write implant config for C2 instance")
 	}

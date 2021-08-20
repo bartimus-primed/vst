@@ -2,7 +2,7 @@ module vicl
 import term
 import strconv
 import os
-
+// vicl -> V Interactive Command Line
 // This should probably be it's own project...
 // Prompts can hold other prompts
 pub struct Prompt {
